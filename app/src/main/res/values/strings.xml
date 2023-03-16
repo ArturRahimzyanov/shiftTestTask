@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">testTask2</string>
+    <string name="getData">получить данные</string>
+    <string name="editbin">Введите BIN</string>
+    <string name="number">number:</string>
+    <string name="length">length:</string>
+    <string name="dash"> </string>
+    <string name="lum">lum:</string>
+    <string name="scheme">scheme:</string>
+    <string name="type">type:</string>
+    <string name="brand">Brand:</string>
+    <string name="prepaid">prepaid:</string>
+    <string name="country">country:</string>
+    <string name="numeric">numeric:</string>
+    <string name="alpha2">alpha2:</string>
+    <string name="name">name:</string>
+    <string name="emoji">emoji:</string>
+    <string name="currency">currency:</string>
+    <string name="latitude">latitude:</string>
+    <string name="longitude">longitude:</string>
+    <string name="bank">Bank:</string>
+    <string name="Bankname">name:</string>
+    <string name="url">url:</string>
+    <string name="phone">phone:</string>
+    <string name="city">city:</string>
+    <string name="bin">введите BIN</string>
+</resources>
