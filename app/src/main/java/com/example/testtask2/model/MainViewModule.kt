@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 class MainViewModule : ViewModel() {
 
     private var binList: MutableLiveData<BinDataaaaaa> = MutableLiveData(BinDataaaaaa())
-    //private lateinit var binList: BinDataaaaaa
+
     fun getBinList() = binList
 
     fun sendRequest(id: String): MutableLiveData<BinDataaaaaa> {
