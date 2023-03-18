@@ -1,79 +1,123 @@
 package com.example.testtask2
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.view.Surface
 import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.ui.graphics.vector.DefaultRotation
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.testtask2.databinding.ActivityMainBinding
 import com.example.testtask2.model.BinDataaaaaa
 import com.example.testtask2.model.MainViewModule
 
-
 class MainActivity : AppCompatActivity() {
-
-    //45717360
 
    private lateinit var binding: ActivityMainBinding
    private lateinit var viewModule: MainViewModule
    private var bin = BinDataaaaaa()
-   private val binList = mutableListOf<String>()
+   private var binList = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        viewModule = ViewModelProvider(this)[MainViewModule::class.java]
-        viewModule.getBin().observe(this) {
-            insertBinlist(it)
-        }
-
-        binding.inputEdit.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, binList))
-        binding.inputEdit.threshold = 0
-        binding.inputEdit.onFocusChangeListener =
-         OnFocusChangeListener { v, hasFocus ->
-             if(v.windowVisibility != View.INVISIBLE){
-                 return@OnFocusChangeListener
-             }
-             if (hasFocus) binding.inputEdit.showDropDown()
-             else binding.inputEdit.dismissDropDown()
-         }
-
-        binding.btGetData.setOnClickListener {
-            val requestBin = binding.inputEdit.text.toString()
-            if(isNumeric(requestBin)){
-                bin = viewModule.sendRequest(requestBin).value!!
-                if( requestBin !in binList ) {  binList.add(requestBin) }
-                runOnUiThread {
-                    insertBinlist(bin)
-                }
-                binding.inputEdit.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, binList))
-            }else{
-                Toast.makeText(this, "неверный формат данных", Toast.LENGTH_SHORT).show()
-            }
-
-        }
+        getSavedListFromSP()
+        setupViewModel()
+        setupAutoTextComplete()
+        binding.btGetData.setOnClickListener { sendRequest() }
         initButtonsToOthersApp()
     }
 
-
-
-    fun isNumeric(toCheck: String): Boolean {
-        val regex = "-?[0-9]+(\\.[0-9]+)?".toRegex()
-        return toCheck.matches(regex)
+    private fun getSavedListFromSP() {
+        val sharedPreferences = getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
+        val mySet = sharedPreferences.getStringSet("list", emptySet())
+        val myArrayList = arrayListOf<String>()
+        myArrayList.addAll(mySet!!)
+        binList = myArrayList
     }
 
-    private fun initButtonsToOthersApp() {              //работет автомат запрас открывет
-       binding.bankUrl.setOnClickListener {
+    private fun saveList(arrayList: ArrayList<String>) {
+        val mySet = arrayList.toSet()
+        val sharedPreferences = getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putStringSet("list", mySet)
+        editor.apply()
+    }
+
+
+    private fun sendRequest() {
+        val requestBinInput = binding.inputEdit.text.toString()
+        if(isNumeric(requestBinInput) && isOnline(this) ){        //проверка строки на валидность и на онлайн
+            bin = viewModule.sendRequest(requestBinInput).value!!
+            if( requestBinInput !in binList ) {  binList.add(requestBinInput) }
+            runOnUiThread {
+                insertBinlist(bin)
+            }
+            binding.inputEdit.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, binList))
+        }else {
+            Toast.makeText(this, "неверные данные или вы не подключены к интернету ", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun isOnline(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+            if (capabilities != null) {
+                when {
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
+                        return true
+                    }
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
+                        return true
+                    }
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
+                        return true
+                    }
+                }
+            }
+        } else {
+            val activeNetworkInfo = connectivityManager.activeNetworkInfo
+            if (activeNetworkInfo != null && activeNetworkInfo.isConnected) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun setupViewModel() {
+        viewModule = ViewModelProvider(this)[MainViewModule::class.java]
+        viewModule.getBin().observe(this) { insertBinlist(it) }
+    } //устанавливаем модель и наблюдателей
+
+    private fun setupAutoTextComplete() {
+        binding.inputEdit.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, binList))
+        binding.inputEdit.threshold = 0
+        binding.inputEdit.onFocusChangeListener =
+            OnFocusChangeListener { v, hasFocus ->
+                if(v.windowVisibility != View.INVISIBLE){  //чтобы при повороте не выходило исключение
+                    return@OnFocusChangeListener
+                }
+                if (hasFocus) binding.inputEdit.showDropDown()
+                else binding.inputEdit.dismissDropDown()
+            }
+    }
+
+    private fun isNumeric(toCheck: String): Boolean {
+        val regex = "-?[0-9]+(\\.[0-9]+)?".toRegex()
+        return toCheck.matches(regex)
+    } //true - если все числа [0; 9]
+
+    private fun initButtonsToOthersApp() {              //работет автомат запрос открывет в браузере
+        binding.bankUrl.setOnClickListener {
            if(binding.bankUrl.text != "нет данных"){
                var urlBank = binding.bankUrl.text.toString()
                if (!urlBank.startsWith("https://") && !urlBank.startsWith("http://")){
@@ -135,15 +179,20 @@ class MainActivity : AppCompatActivity() {
                  run { binding.latitudeTextView.text = "нет данных" }
                  binList.country.longitude?.let { binding.longtitudeTextView.text = binList.country.longitude.toString() } ?:
                  run { binding.longtitudeTextView.text = "нет данных" }
-                bankName.text = binList.bank.name ?: "нет данных"
-                bankUrl.text = binList.bank.url ?: "нет данных"
-                bankPhone.text = binList.bank.phone ?: "нет данных"
-                bankCity.text = binList.bank.city ?: "нет данных"
+                bankName.text = binList.bank?.name ?: "нет данных"
+                bankUrl.text = binList.bank?.url ?: "нет данных"    //не убирать вопросы!!!!
+                bankPhone.text = binList.bank?.phone ?: "нет данных"
+                bankCity.text = binList.bank?.city ?: "нет данных"
         }
     }
 
+    override fun onStop() {
+        saveList(binList as ArrayList<String>) //в onDestroy не успевает сохранять, поэтому здесь
+        super.onStop()
+    }
 
     companion object{
         const val TAG = "logs"
     }
+
 }
