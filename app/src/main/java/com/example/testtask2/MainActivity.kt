@@ -2,15 +2,21 @@ package com.example.testtask2
 
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Surface
+import android.view.View
+import android.view.View.OnFocusChangeListener
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.ui.graphics.vector.DefaultRotation
 import androidx.lifecycle.ViewModelProvider
-import com.example.testtask2.model.MainViewModule
 import com.example.testtask2.databinding.ActivityMainBinding
 import com.example.testtask2.model.BinDataaaaaa
-import kotlinx.android.synthetic.main.activity_main.view.*
+import com.example.testtask2.model.MainViewModule
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -18,24 +24,52 @@ class MainActivity : AppCompatActivity() {
 
    private lateinit var binding: ActivityMainBinding
    private lateinit var viewModule: MainViewModule
-   private var binList = BinDataaaaaa()
+   private var bin = BinDataaaaaa()
+   private val binList = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         viewModule = ViewModelProvider(this)[MainViewModule::class.java]
-        viewModule.getBinList().observe(this) {
+        viewModule.getBin().observe(this) {
             insertBinlist(it)
         }
 
+        binding.inputEdit.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, binList))
+        binding.inputEdit.threshold = 0
+        binding.inputEdit.onFocusChangeListener =
+         OnFocusChangeListener { v, hasFocus ->
+             if(v.windowVisibility != View.INVISIBLE){
+                 return@OnFocusChangeListener
+             }
+             if (hasFocus) binding.inputEdit.showDropDown()
+             else binding.inputEdit.dismissDropDown()
+         }
+
         binding.btGetData.setOnClickListener {
-            binList = viewModule.sendRequest(binding.inputEdit.text.toString()).value!!
-            runOnUiThread {
-                insertBinlist(binList)
+            val requestBin = binding.inputEdit.text.toString()
+            if(isNumeric(requestBin)){
+                bin = viewModule.sendRequest(requestBin).value!!
+                if( requestBin !in binList ) {  binList.add(requestBin) }
+                runOnUiThread {
+                    insertBinlist(bin)
+                }
+                binding.inputEdit.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, binList))
+            }else{
+                Toast.makeText(this, "неверный формат данных", Toast.LENGTH_SHORT).show()
             }
+
         }
         initButtonsToOthersApp()
+    }
+
+
+
+    fun isNumeric(toCheck: String): Boolean {
+        val regex = "-?[0-9]+(\\.[0-9]+)?".toRegex()
+        return toCheck.matches(regex)
     }
 
     private fun initButtonsToOthersApp() {              //работет автомат запрас открывет
@@ -70,13 +104,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun toMaps() {   //работает автомат звонилку открывает
+    private fun toMaps() {   //работает автомат карту открывает
         val geoUriString = "geo:${binding.latitudeTextView.text},${binding.longtitudeTextView.text}?z=15"
         val geoUri: Uri = Uri.parse(geoUriString)
         val mapIntent = Intent(Intent.ACTION_VIEW, geoUri)
         if (mapIntent.resolveActivity(packageManager) != null) {
             startActivity(mapIntent)
-        }else{
+        } else{
             Toast.makeText(this, "нет возможности открыть", Toast.LENGTH_SHORT).show()
         }
     }
@@ -99,7 +133,7 @@ class MainActivity : AppCompatActivity() {
                 currencyTextView.text = binList.country.currency ?: "нет данных"
                  binList.country.latitude?.let { binding.latitudeTextView.text = binList.country.latitude.toString() } ?:
                  run { binding.latitudeTextView.text = "нет данных" }
-                  binList.country.longitude?.let { binding.longtitudeTextView.text = binList.country.longitude.toString() } ?:
+                 binList.country.longitude?.let { binding.longtitudeTextView.text = binList.country.longitude.toString() } ?:
                  run { binding.longtitudeTextView.text = "нет данных" }
                 bankName.text = binList.bank.name ?: "нет данных"
                 bankUrl.text = binList.bank.url ?: "нет данных"
@@ -107,6 +141,7 @@ class MainActivity : AppCompatActivity() {
                 bankCity.text = binList.bank.city ?: "нет данных"
         }
     }
+
 
     companion object{
         const val TAG = "logs"

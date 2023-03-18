@@ -1,5 +1,7 @@
 package com.example.testtask2.model
 
+import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.GlobalScope
@@ -7,19 +9,21 @@ import kotlinx.coroutines.launch
 
 class MainViewModule : ViewModel() {
 
-    private var binList: MutableLiveData<BinDataaaaaa> = MutableLiveData(BinDataaaaaa())
+    private var bin: MutableLiveData<BinDataaaaaa> = MutableLiveData(BinDataaaaaa())
 
-    fun getBinList() = binList
+    fun getBin() = bin
 
     fun sendRequest(id: String): MutableLiveData<BinDataaaaaa> {
         GlobalScope.launch {
             val request = BinListApi.create().getBinListData(id).execute()
             if (request.isSuccessful) {
-                binList.postValue(request.body() ?: BinDataaaaaa())
-            } else {
-                binList.postValue(BinDataaaaaa())
+                bin.postValue(request.body() ?: BinDataaaaaa())
             }
         }
-        return binList
+        return bin
+    }
+
+    companion object{
+        const val TAG = "logs"
     }
 }
