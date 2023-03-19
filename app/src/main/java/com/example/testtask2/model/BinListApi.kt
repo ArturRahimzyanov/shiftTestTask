@@ -9,7 +9,7 @@ import retrofit2.http.Path
 interface BinListApi {
 
     @GET("{id}")
-   fun getBinListData(@Path("id") id: String ): Call<BinDataaaaaa>
+   fun getBinListData(@Path("id") id: String ): Call<BinData>
 
     companion object{
 

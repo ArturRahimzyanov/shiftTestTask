@@ -9,19 +9,19 @@ import kotlinx.coroutines.launch
 
 class MainViewModule : ViewModel() {
 
-    private var bin: MutableLiveData<BinDataaaaaa> = MutableLiveData(BinDataaaaaa())
+    private var bin: MutableLiveData<BinData> = MutableLiveData(BinData())
 
     fun getBin() = bin
 
     @OptIn(DelicateCoroutinesApi::class)
-    fun sendRequest(id: String): MutableLiveData<BinDataaaaaa> {
+    fun sendRequest(id: String): MutableLiveData<BinData> {
         val handler = CoroutineExceptionHandler { _, exception ->
             println("CoroutineExceptionHandler got $exception")
         }
         GlobalScope.launch(handler) {
             val request = BinListApi.create().getBinListData(id).execute()
             if (request.isSuccessful) {
-                bin.postValue(request.body() ?: BinDataaaaaa())
+                bin.postValue(request.body() ?: BinData())
             }
         }
         return bin

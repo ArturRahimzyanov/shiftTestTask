@@ -14,14 +14,14 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.testtask2.databinding.ActivityMainBinding
-import com.example.testtask2.model.BinDataaaaaa
+import com.example.testtask2.model.BinData
 import com.example.testtask2.model.MainViewModule
 
 class MainActivity : AppCompatActivity() {
 
    private lateinit var binding: ActivityMainBinding
    private lateinit var viewModule: MainViewModule
-   private var bin = BinDataaaaaa()
+   private var bin = BinData()
    private var binList = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -166,7 +166,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun insertBinlist(binList: BinDataaaaaa) {
+    private fun insertBinlist(binList: BinData) {
         with(binding){
                 binList.number.length?.let { binding.lengthTextView.text = binList.number.length.toString() } ?:
                 run { binding.lengthTextView.text = "нет данных" }
