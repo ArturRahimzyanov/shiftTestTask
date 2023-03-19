@@ -12,3 +12,4 @@
 Сохранение состояния при изменении конфигурации устройства реализовал через ViewModel
 
 ![ScreenShots](https://github.com/ArturRahimzyanov/shiftTestTask/blob/main/imgonline-com-ua-Resize-DfqJ90iDhB.jpg)
+![ScreenShots](https://github.com/ArturRahimzyanov/shiftTestTask/blob/main/imgonline-com-ua-Resize-5HzgEERr27.jpg)
