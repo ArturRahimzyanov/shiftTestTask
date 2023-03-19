@@ -13,3 +13,4 @@
 
 
 ![ScreenShots](https://github.com/ArturRahimzyanov/shiftTestTask/blob/main/readmione.jpg)
+![ScreenShots](https://github.com/ArturRahimzyanov/shiftTestTask/blob/main/readmisecond.jpg)
