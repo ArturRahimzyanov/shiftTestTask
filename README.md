@@ -11,4 +11,4 @@
 Для работы с сетью использовал retrofit, для кешеривания запросов sharedPreferences,
 Сохранение состояния при изменении конфигурации устройства реализовал через ViewModel
 
-
+![ScreenShots](https://github.com/ArturRahimzyanov/shiftTestTask/blob/main/imgonline-com-ua-Resize-DfqJ90iDhB.jpg)
