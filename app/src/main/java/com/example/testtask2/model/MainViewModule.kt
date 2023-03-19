@@ -11,7 +11,6 @@ class MainViewModule : ViewModel() {
 
     private var bin: MutableLiveData<BinDataaaaaa> = MutableLiveData(BinDataaaaaa())
 
-
     fun getBin() = bin
 
     @OptIn(DelicateCoroutinesApi::class)

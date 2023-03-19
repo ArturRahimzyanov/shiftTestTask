@@ -2,7 +2,7 @@ package com.example.testtask2.model
 
 import com.google.gson.annotations.SerializedName
 
-data class BinDataaaaaa (
+data class BinData (
     @SerializedName("number"  ) var number  : Number  = Number(),
     @SerializedName("scheme"  ) var scheme  : String?  = null,
     @SerializedName("type"    ) var type    : String?  = null,

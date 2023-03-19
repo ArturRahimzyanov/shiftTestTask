@@ -12,7 +12,6 @@ import android.view.View.OnFocusChangeListener
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.testtask2.databinding.ActivityMainBinding
 import com.example.testtask2.model.BinDataaaaaa
@@ -86,7 +85,7 @@ class MainActivity : AppCompatActivity() {
             }
         } else {
             val activeNetworkInfo = connectivityManager.activeNetworkInfo
-            if (activeNetworkInfo != null && activeNetworkInfo.isConnected) {
+            if ((activeNetworkInfo != null) && activeNetworkInfo.isConnected) {
                 return true
             }
         }
@@ -121,9 +120,11 @@ class MainActivity : AppCompatActivity() {
            if(binding.bankUrl.text != "нет данных"){
                var urlBank = binding.bankUrl.text.toString()
                if (!urlBank.startsWith("https://") && !urlBank.startsWith("http://")){
-                   urlBank = "http://$urlBank";
+                   urlBank = "http://$urlBank"
                }
                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(urlBank)))
+           }else{
+               Toast.makeText(this, "нет данных для открытия", Toast.LENGTH_SHORT).show()
            }
        }
 
@@ -132,18 +133,24 @@ class MainActivity : AppCompatActivity() {
                 val intentLaunch2 = Intent(Intent.ACTION_DIAL)
                 intentLaunch2.data = Uri.parse("tel:${binding.bankPhone.text}")
                 startActivity(intentLaunch2)
+            }else{
+                Toast.makeText(this, "нет данных для открытия", Toast.LENGTH_SHORT).show()
             }
         }
 
         binding.latitudeTextView.setOnClickListener {
             if(binding.latitudeTextView.text != "нет данных"){
                 toMaps()
+            }else{
+                Toast.makeText(this, "нет данных для открытия", Toast.LENGTH_SHORT).show()
             }
         }
 
         binding.longtitudeTextView.setOnClickListener {
             if(binding.longtitudeTextView.text != "нет данных") {
                 toMaps()
+            }else{
+                Toast.makeText(this, "нет данных для открытия", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -190,9 +197,4 @@ class MainActivity : AppCompatActivity() {
         saveList(binList as ArrayList<String>) //в onDestroy не успевает сохранять, поэтому здесь
         super.onStop()
     }
-
-    companion object{
-        const val TAG = "logs"
-    }
-
 }
