@@ -56,7 +56,9 @@ class MainActivity : AppCompatActivity() {
         val requestBinInput = binding.inputEdit.text.toString()
         if(isNumeric(requestBinInput) && isOnline(this) ){        //проверка строки на валидность и на онлайн
             bin = viewModule.sendRequest(requestBinInput).value!!
-            if( requestBinInput !in binList && (binList.size < 6)) {  binList.add(requestBinInput) }
+            if( requestBinInput !in binList ){
+                binList.add(0, requestBinInput)
+            }
             runOnUiThread {
                 insertBinlist(bin)
             }
