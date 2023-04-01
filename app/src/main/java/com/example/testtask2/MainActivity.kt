@@ -17,13 +17,14 @@ import com.example.testtask2.databinding.ActivityMainBinding
 import com.example.testtask2.model.BinData
 import com.example.testtask2.model.MainViewModule
 
+
 class MainActivity : AppCompatActivity() {
 
    private lateinit var binding: ActivityMainBinding
    private lateinit var viewModule: MainViewModule
    private var bin = BinData()
    private var binList = mutableListOf<String>()
-
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -51,17 +52,12 @@ class MainActivity : AppCompatActivity() {
         editor.apply()
     }
 
-
     private fun sendRequest() {
         val requestBinInput = binding.inputEdit.text.toString()
         if(isNumeric(requestBinInput) && isOnline(this) ){        //проверка строки на валидность и на онлайн
             bin = viewModule.sendRequest(requestBinInput).value!!
-            if( requestBinInput !in binList ){
-                binList.add(0, requestBinInput)
-            }
-            runOnUiThread {
-                insertBinlist(bin)
-            }
+            if( requestBinInput !in binList ){ binList.add(0, requestBinInput) }
+            insertBinlist(bin)
             binding.inputEdit.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, binList))
         }else {
             Toast.makeText(this, "неверные данные или вы не подключены к интернету ", Toast.LENGTH_SHORT).show()
@@ -96,12 +92,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupViewModel() {
         viewModule = ViewModelProvider(this)[MainViewModule::class.java]
-        viewModule.getBin().observe(this) { insertBinlist(it) }
+        viewModule.getBin().observe(this) {   insertBinlist(it) }
+        viewModule.getIsFailure().observe(this) {   Toast.makeText(this, "Слабый интернет", Toast.LENGTH_SHORT).show()}
     } //устанавливаем модель и наблюдателей
 
     private fun setupAutoTextComplete() {
         binding.inputEdit.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, binList))
-        binding.inputEdit.threshold = 0
+        binding.inputEdit.threshold = 1
         binding.inputEdit.onFocusChangeListener =
             OnFocusChangeListener { v, hasFocus ->
                 if(v.windowVisibility != View.INVISIBLE){  //чтобы при повороте не выходило исключение

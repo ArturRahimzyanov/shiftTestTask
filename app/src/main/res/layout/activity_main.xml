@@ -25,6 +25,7 @@
         android:id="@+id/inputEdit"
         android:layout_width="200dp"
         android:textColor="@color/black"
+        android:maxLength="8"
         android:hint="@string/bin"
         android:saveEnabled="true"
         android:textColorHint="@color/grey"
