@@ -18,8 +18,8 @@ data class Country (
     @SerializedName("name"      ) var name      : String? = null,
     @SerializedName("emoji"     ) var emoji     : String? = null,
     @SerializedName("currency"  ) var currency  : String? = null,
-    @SerializedName("latitude"  ) var latitude  : Int?    = null,
-    @SerializedName("longitude" ) var longitude : Int?    = null
+    @SerializedName("latitude"  ) var latitude  : Float?    = null,
+    @SerializedName("longitude" ) var longitude : Float?    = null
 )
 
 data class Bank (

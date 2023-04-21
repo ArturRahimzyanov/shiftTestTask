@@ -20,16 +20,10 @@ class MainViewModule : ViewModel() {
 
     fun sendRequest(id: String): MutableLiveData<BinData> {
         viewModelScope.launch(Dispatchers.IO) {
-            Log.d(TAG, "launch  ${Thread.currentThread().name}")
              BinListApi.create().getBinListData(id).enqueue(object : Callback<BinData>{
 
                 override fun onResponse(call: Call<BinData>, response: Response<BinData>) {
-                    Log.d(TAG, "onResponse  ${Thread.currentThread().name}")
-                    if(response.isSuccessful){
-                        bin.value = response.body() ?: BinData()
-                    } else {
-                        isFailure.value = 1
-                    }
+                    bin.value = response.body() ?: BinData()
                 }
 
                 override fun onFailure(call: Call<BinData>, t: Throwable) {

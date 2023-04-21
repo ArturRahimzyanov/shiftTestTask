@@ -1,5 +1,6 @@
 package com.example.testtask2
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
@@ -154,6 +155,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("QueryPermissionsNeeded")
     private fun toMaps() {   //работает автомат карту открывает
         val geoUriString = "geo:${binding.latitudeTextView.text},${binding.longtitudeTextView.text}?z=15"
         val geoUri: Uri = Uri.parse(geoUriString)
